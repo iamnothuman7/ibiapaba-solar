@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Economia - Ibiapaba Solar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 50%, #a5d6a7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Elementos decorativos do fundo */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Partículas solares decorativas */
+        .sun-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .sun-particle:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .sun-particle:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .sun-particle:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .sun-particle:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            bottom: 5%;
+            right: 5%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-25px) scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(56, 142, 60, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            padding: 45px;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo img {
+            max-width: 220px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 6px 12px rgba(56, 142, 60, 0.2));
+        }
+
+        .logo p {
+            color: #388e3c;
+            font-size: 16px;
+            margin-top: 8px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #c8e6c9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(248, 252, 248, 0.8);
+            color: #2e7d32;
+        }
+
+        .input-group input::placeholder {
+            color: #81c784;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #4caf50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(56, 142, 60, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(56, 142, 60, 0.5);
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results {
+            margin-top: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(248, 252, 248, 0.9), rgba(232, 245, 232, 0.8));
+            border-radius: 18px;
+            display: none;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            box-shadow: 
+                inset 0 2px 10px rgba(76, 175, 80, 0.1),
+                0 5px 15px rgba(76, 175, 80, 0.1);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #1b5e20;
+            font-size: 16px;
+        }
+
+        .economy {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+        }
+
+        .economy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+            background: linear-gradient(135deg, #128C7E, #075E54);
+        }
+
+        .cota-recomendada {
+            background: linear-gradient(135deg, #ffeb3b, #fdd835);
+            color: #33691e;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 3px 12px rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #4caf50;
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .switch-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .switch-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #c8e6c9;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(248, 252, 248, 0.8);
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .switch-btn.active {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            color: white;
+            border-color: #4caf50;
+            box-shadow: 0 3px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .switch-btn:hover:not(.active) {
+            border-color: #4caf50;
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas decorativas do fundo -->
+    <div class="sun-particle"></div>
+    <div class="sun-particle"></div>
+    <div class="sun-particle"></div>
+    <div class="sun-particle"></div>
+
+    <div class="calculator-container">
+        <div class="logo">
+            <img src="logo.png" alt="Ibiapaba Solar" onerror="this.style.display='none'">
+            <p>Calculadora de Economia Real</p>
+        </div>
+
+        <div class="switch-input">
+            <div class="switch-btn active" id="btnValor" onclick="switchToValue()">Valor da Fatura</div>
+            <div class="switch-btn" id="btnConsumo" onclick="switchToConsumption()">Consumo (kWh)</div>
+        </div>
+
+        <div class="input-group" id="inputValor">
+            <label for="billAmount">Valor médio da sua fatura (R$):</label>
+            <input type="number" id="billAmount" placeholder="Ex: 350,00" min="100" step="0.01">
+        </div>
+
+        <div class="input-group" id="inputConsumo" style="display: none;">
+            <label for="consumption">Seu consumo mensal (kWh):</label>
+            <input type="number" id="consumption" placeholder="Ex: 500" min="100" max="10000">
+        </div>
+
+        <div class="input-group">
+            <label for="connectionType">Tipo de ligação:</label>
+            <select id="connectionType">
+                <option value="monofasica">Monofásica</option>
+                <option value="bifasica">Bifásica</option>
+                <option value="trifasica" selected>Trifásica</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="profile">Seu perfil:</label>
+            <select id="profile">
+                <option value="residencial">Residencial</option>
+                <option value="comercial" selected>Comercial</option>
+                <option value="industrial">Industrial</option>
+            </select>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateEconomy()">
+            🌞 CALCULAR MINHA ECONOMIA
+        </button>
+
+        <div class="results" id="results">
+            <div class="result-item">
+                <span class="result-label">Sua conta atual:</span>
+                <span class="result-value" id="currentBill">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Nova conta ENEL:</span>
+                <span class="result-value" id="newEnelBill">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Contribuição associação:</span>
+                <span class="result-value" id="associationFee">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Total a pagar:</span>
+                <span class="result-value" id="newTotal">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Economia mensal:</span>
+                <span class="result-value" id="monthlySavings">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Economia anual:</span>
+                <span class="result-value" id="yearlySavings">R$ 0,00</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Redução de custos:</span>
+                <span class="result-value" id="reductionPercent">0%</span>
+            </div>
+
+            <div class="cota-recomendada" id="recommendedCota">
+                Cota recomendada: 
+            </div>
+
+            <div class="buttons-container">
+                <button class="economy" id="economyMessage" onclick="openWhatsApp()">
+                    💰 QUERO ECONOMIZAR AGORA!
+                </button>
+                
+                <button class="whatsapp-btn" onclick="openWhatsApp()">
+                    📱 FALAR NO WHATSAPP
+                </button>
+            </div>
+
+            <div class="disclaimer">
+                *Cálculos baseados no Estatuto Social da Associação Ibiapaba Solar - Lei 14.300/2022
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inputMode = 'value'; // 'value' or 'consumption'
+        let currentCalculationData = null;
+
+        function switchToValue() {
+            inputMode = 'value';
+            document.getElementById('inputValor').style.display = 'block';
+            document.getElementById('inputConsumo').style.display = 'none';
+            document.getElementById('btnValor').classList.add('active');
+            document.getElementById('btnConsumo').classList.remove('active');
+        }
+
+        function switchToConsumption() {
+            inputMode = 'consumption';
+            document.getElementById('inputValor').style.display = 'none';
+            document.getElementById('inputConsumo').style.display = 'block';
+            document.getElementById('btnValor').classList.remove('active');
+            document.getElementById('btnConsumo').classList.add('active');
+        }
+
+        function calculateEconomy() {
+            let consumption, currentBillValue;
+
+            if (inputMode === 'value') {
+                currentBillValue = parseFloat(document.getElementById('billAmount').value);
+                if (!currentBillValue || currentBillValue < 100) {
+                    alert('Por favor, digite um valor válido para sua fatura (mínimo R$ 100,00)');
+                    return;
+                }
+                // Estimar consumo baseado no valor da fatura (considerando CIP)
+                consumption = Math.max(100, (currentBillValue - 140.06) / 0.9727);
+            } else {
+                consumption = parseFloat(document.getElementById('consumption').value);
+                if (!consumption || consumption < 100) {
+                    alert('Por favor, digite um consumo válido (mínimo 100 kWh)');
+                    return;
+                }
+                // Calcular valor atual baseado no consumo
+                currentBillValue = (consumption * 0.9727) + 140.06;
+            }
+
+            const connectionType = document.getElementById('connectionType').value;
+            const profile = document.getElementById('profile').value;
+            
+            // Tarifas baseadas no estatuto
+            const TARIFA_MERCADO_CATIVO = 0.9727;
+            const TARIFA_GD = 0.7392;
+            const CIP = 140.06;
+
+            // Calcular conta atual (Cmc) - usar o valor real informado pelo cliente
+            const cmc = inputMode === 'value' ? currentBillValue : (consumption * TARIFA_MERCADO_CATIVO) + CIP;
+
+            // Definir cotas recomendadas baseadas no consumo estimado
+            let cotas = [];
+            let creditos = 0;
+            let valorContribuicao = 0;
+
+            if (consumption <= 400) {
+                cotas = [{tipo: 'BÁSICA', quantidade: 1, valor: 185}];
+                creditos = 300;
+            } else if (consumption <= 600) {
+                cotas = [{tipo: 'PLUS', quantidade: 1, valor: 295}];
+                creditos = 500;
+            } else if (consumption <= 1000) {
+                cotas = [{tipo: 'COMERCIAL', quantidade: 1, valor: 585}];
+                creditos = 1000;
+            } else {
+                // Múltiplas cotas para consumo maior
+                const cotasComerciais = Math.floor(consumption / 1000);
+                const resto = consumption % 1000;
+                
+                if (cotasComerciais > 0) {
+                    cotas.push({tipo: 'COMERCIAL', quantidade: cotasComerciais, valor: 585 * cotasComerciais});
+                    creditos += cotasComerciais * 1000;
+                }
+                
+                if (resto > 0) {
+                    if (resto <= 400) {
+                        cotas.push({tipo: 'BÁSICA', quantidade: 1, valor: 185});
+                        creditos += 300;
+                    } else {
+                        cotas.push({tipo: 'PLUS', quantidade: 1, valor: 295});
+                        creditos += 500;
+                    }
+                }
+            }
+
+            // Calcular valor total da contribuição
+            valorContribuicao = cotas.reduce((total, cota) => total + cota.valor, 0);
+
+            // Calcular nova conta (Cgd)
+            const valorCreditos = Math.min(creditos, consumption) * TARIFA_GD;
+            const cgd = ((consumption * TARIFA_MERCADO_CATIVO) - valorCreditos) + CIP;
+
+            // Calcular totais
+            const totalComAssociacao = cgd + valorContribuicao;
+            const economiaMensal = cmc - totalComAssociacao;
+            const economiaAnual = economiaMensal * 12;
+            const percentualReducao = (economiaMensal / cmc) * 100;
+
+            // Salvar dados para usar no WhatsApp
+            currentCalculationData = {
+                consumo: consumption,
+                contaAtual: cmc,
+                economiaMensal: economiaMensal,
+                economiaAnual: economiaAnual,
+                percentualReducao: percentualReducao,
+                cotas: cotas,
+                valorContribuicao: valorContribuicao
+            };
+
+            // Atualizar interface
+            document.getElementById('currentBill').textContent = `R$ ${cmc.toFixed(2)}`;
+            document.getElementById('newEnelBill').textContent = `R$ ${cgd.toFixed(2)}`;
+            document.getElementById('associationFee').textContent = `R$ ${valorContribuicao.toFixed(2)}`;
+            document.getElementById('newTotal').textContent = `R$ ${totalComAssociacao.toFixed(2)}`;
+            document.getElementById('monthlySavings').textContent = `R$ ${economiaMensal.toFixed(2)}`;
+            document.getElementById('yearlySavings').textContent = `R$ ${economiaAnual.toFixed(2)}`;
+            document.getElementById('reductionPercent').textContent = `${percentualReducao.toFixed(1)}%`;
+
+            // Montar texto da cota recomendada
+            const cotaText = cotas.map(cota => 
+                `${cota.quantidade}x ${cota.tipo}`
+            ).join(' + ');
+            
+            document.getElementById('recommendedCota').innerHTML = 
+                `<strong>Cota${cotas.length > 1 ? 's' : ''} recomendada${cotas.length > 1 ? 's' : ''}:</strong> ${cotaText}`;
+
+            // Mensagem de economia
+            let message = '💰 QUERO ECONOMIZAR AGORA!';
+            if (percentualReducao > 15) message = '🎉 QUERO ESTA ECONOMIA EXCELENTE!';
+            if (percentualReducao > 20) message = '🚀 QUERO ESTA ECONOMIA EXTRAORDINÁRIA!';
+            if (economiaMensal < 0) message = '⚠️ PRECISO DE AJUDA ESPECIALIZADA';
+            
+            document.getElementById('economyMessage').textContent = message;
+
+            // Mostrar resultados
+            document.getElementById('results').style.display = 'block';
+
+            // Rolagem suave para os resultados
+            document.getElementById('results').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        function openWhatsApp() {
+            if (!currentCalculationData) {
+                alert('Por favor, calcule sua economia primeiro!');
+                return;
+            }
+
+            const phone = '5588996931116';
+            const cotasText = currentCalculationData.cotas.map(cota => 
+                `${cota.quantidade}x ${cota.tipo}`
+            ).join(' + ');
+            
+            const message = `Olá! Acabei de simular minha economia na calculadora da Ibiapaba Solar:
+
+💡 *RESULTADO DA MINHA SIMULAÇÃO:*
+• Consumo: ${currentCalculationData.consumo.toFixed(0)} kWh
+• Conta atual: R$ ${currentCalculationData.contaAtual.toFixed(2)}
+• Economia mensal: R$ ${currentCalculationData.economiaMensal.toFixed(2)}
+• Economia anual: R$ ${currentCalculationData.economiaAnual.toFixed(2)}
+• Redução: ${currentCalculationData.percentualReducao.toFixed(1)}%
+• Cotas recomendadas: ${cotasText}
+
+💰 *Quero fechar esta economia!*
+
+Podemos conversar?`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${phone}?text=${encodedMessage}`;
+            
+            window.open(whatsappURL, '_blank');
+        }
+
+        // Calcular automaticamente ao pressionar Enter
+        document.getElementById('billAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateEconomy();
+            }
+        });
+
+        document.getElementById('consumption').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateEconomy();
+            }
+        });
+
+        // Inicializar com foco no campo de valor
+        document.getElementById('billAmount').focus();
+    </script>
+</body>
+</html>
